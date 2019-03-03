@@ -1,10 +1,14 @@
 import React from 'react'
 import Speaker from '@/components/Speaker'
 import StarRates from '@/components/StarRates'
+import { backgroundFetch } from '@/_helpers/browser-api'
 import { YoudaoResult, YoudaoResultLex, YoudaoResultRelated } from './engine'
 import { ViewPorps } from '@/components/dictionaries/helpers'
 
 export default class DictYoudao extends React.PureComponent<ViewPorps<YoudaoResult>> {
+  state = {
+    addText: '添加到新词本',
+  }
   renderLex (result: YoudaoResultLex) {
     return (
       <>
@@ -12,6 +16,7 @@ export default class DictYoudao extends React.PureComponent<ViewPorps<YoudaoResu
           <div className='dictYoudao-HeaderContainer'>
             <h1 className='dictYoudao-Title'>{result.title}</h1>
             <span className='dictYoudao-Pattern'>{result.pattern}</span>
+            <button className='dictYoudao-addToWordBook' onClick={this.addToWordBook}>{this.state.addText}</button>
           </div>
         }
         {(result.stars > 0 || result.prons.length > 0) &&
@@ -54,6 +59,34 @@ export default class DictYoudao extends React.PureComponent<ViewPorps<YoudaoResu
         }
       </>
     )
+  }
+
+  addToWordBook = () => {
+    if (this.state.addText === '添加中') return
+    const result = this.props.result as YoudaoResultLex
+    this.setState({
+      addText: '添加中',
+    })
+
+    return backgroundFetch(`http://dict.youdao.com/wordbook/ajax?action=addword&q=${result.title}`, {
+      credentials: 'include'
+    })
+    .then(({ body = {} }) => {
+      if (body.message === 'adddone') {
+        this.setState({
+          addText: '添加成功',
+        })
+      } else {
+        alert('请先登录有道词典')
+        return window.open('http://account.youdao.com/login?service=dict')
+      }
+    })
+    .catch((e) => {
+      this.setState({
+        addText: '添加失败',
+      })
+      console.log(e)
+    })
   }
 
   renderRelated (result: YoudaoResultRelated) {
