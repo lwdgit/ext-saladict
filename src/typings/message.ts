@@ -80,6 +80,11 @@ export const enum MsgType {
    * Background proxy sends back underlyingly
    */
   __PageInfo__,
+
+  /**
+   * Background Fetch
+   */
+  BackgroundFetch
 }
 
 /** iframe messaging */
@@ -243,4 +248,12 @@ export interface MsgContextMenusClick {
   readonly menuItemId: string
   readonly selectionText?: string
   readonly linkUrl?: string
+}
+
+export interface MsgBackgroundFetch {
+  readonly type: MsgType.BackgroundFetch
+  readonly payload: {
+    input: RequestInfo
+    init: RequestInit
+  }
 }

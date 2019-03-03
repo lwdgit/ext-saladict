@@ -40,6 +40,7 @@ export function _getDefaultProfile (id?: string) {
         'guoyu',
         'liangan',
         'googledict',
+        'shanbay',
       ] as Array<keyof ReturnType<typeof getALlDicts>>,
       // settings of each dict will be auto-generated
       all: getALlDicts()

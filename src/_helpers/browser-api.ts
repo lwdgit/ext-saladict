@@ -129,6 +129,20 @@ export const message = {
 }
 
 /**
+ *
+ * Background Fetch
+ */
+export function backgroundFetch (input: RequestInfo, init?: RequestInit): Promise<any> {
+  return messageSend({
+    type: MsgType.BackgroundFetch,
+    payload: {
+      input,
+      init
+    }
+  })
+}
+
+/**
  * Open a url on new tab or highlight a existing tab if already opened
  */
 export async function openURL (url: string, self?: boolean): Promise<void> {

@@ -23,6 +23,7 @@ import {
   MsgSyncServiceDownload,
   MsgSyncServiceUpload,
   MsgGetSuggests,
+  MsgBackgroundFetch,
 } from '@/typings/message'
 
 /** is a standalone panel running */
@@ -81,6 +82,10 @@ message.addListener((data, sender: browser.runtime.MessageSender) => {
 
     case 'youdao_translate_ajax' as any:
       return youdaoTranslateAjax(data.request)
+
+    case MsgType.BackgroundFetch:
+      const payload = (data as MsgBackgroundFetch).payload
+      return backgroundFetch(payload.input, payload.init)
   }
 })
 
@@ -266,6 +271,30 @@ function getClipboard (): Promise<string> {
     el.focus()
     document.execCommand('paste')
     return Promise.resolve(el.value || '')
+  }
+}
+
+/**
+ * Background Fetch
+ */
+
+async function backgroundFetch (input: RequestInfo, init?: RequestInit): Promise<any> {
+  const response: any = await fetch(input, init)
+  let body: string | Object | null = null
+  try {
+    body = await response.json()
+  } catch (e) {
+    body = await response.text()
+  }
+  const { ok, status, statusText, redirected, type, url } = response
+  return {
+    ok,
+    status,
+    statusText,
+    redirected,
+    type,
+    url,
+    body,
   }
 }
 
